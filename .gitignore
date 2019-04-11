@@ -1,0 +1,8 @@
+*.Rproj
+.Rproj.user
+.Rhistory
+.Ruserdata
+*.Rout
+
+*.DS_Store
+/node_modules
