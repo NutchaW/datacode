@@ -3,29 +3,30 @@ library(abind)
 
 SIRS <- function(x,ts,dt,tmstep,N,AH,seed,discrete) {
   # x=[S,I,total incidence,R0max,R0min,L,D]
-  AH=c(AH,AH)
-  num_ens=dim(x)[2]
-  BT1=matrix(0, length(AH),num_ens)
-  BETA=matrix(0,length(AH),num_ens)
-  for (i in 1:num_ens) {
-    # b=log(x[4,i]-x[5,i])
-    if ((x[4,i]-x[5,i])>=0) {
-      b=log(x[4,i]-x[5,i])
-    }
-    else {
-      b=complex(real=log(-(x[4,i]-x[5,i])),imaginary = pi)
-    }
-    a=-180
-    BT1[,i]=exp(a*AH+b)+x[5,i]
-    BETA[,i]=BT1[,i]/x[7,i]
-  }
-  Sr=array(0,c(3,num_ens,abs(tmstep)+1))
-  Incidence=matrix(0,abs(tmstep)+1,num_ens)
-  Sr[,,1]=x[1:3,]
-  L=x[6,]
-  D=x[7,]
-  
   if (discrete==0) {
+    AH=c(AH,AH)
+    num_ens=dim(x)[2]
+    BT1=matrix(0,length(AH),num_ens)
+    BETA=matrix(0,length(AH),num_ens)
+    for (i in 1:num_ens) {
+      # b=log(x[4,i]-x[5,i])
+      if ((x[4,i]-x[5,i])>=0) {
+        b=log(x[4,i]-x[5,i])
+      }
+      else {
+        b=complex(real=log(-(x[4,i]-x[5,i])),imaginary = pi)
+      }
+      a=-180
+      BT1[,i]=exp(a*AH+b)+x[5,i]
+      BETA[,i]=BT1[,i]/x[7,i]
+    }
+    # Sr=array(0,c(3,num_ens,tmstep+1))
+    # Incidence=matrix(0,(tmstep+1),num_ens)
+    Sr=array(0,c(3,num_ens,abs(tmstep)+1))
+    Incidence=matrix(0,(abs(tmstep)+1),num_ens)
+    Sr[,,1]=x[1:3,]
+    L=x[6,]
+    D=x[7,]
     # start integration
     tcnt=0
     for (t in seq(ts+dt,ts+tmstep,by = dt)) {
@@ -98,6 +99,27 @@ SIRS <- function(x,ts,dt,tmstep,N,AH,seed,discrete) {
   } 
   
   if (discrete==1) {
+    AH=c(AH,AH)
+    num_ens=dim(x)[2]
+    BT1=matrix(0, length(AH),num_ens)
+    BETA=matrix(0,length(AH),num_ens)
+    for (i in 1:num_ens) {
+      # b=log(x[4,i]-x[5,i])
+      if ((x[4,i]-x[5,i])>=0) {
+        b=log(x[4,i]-x[5,i])
+      }
+      else {
+        b=complex(real=log(-(x[4,i]-x[5,i])),imaginary = pi)
+      }
+      a=-180
+      BT1[,i]=exp(a*AH+b)+x[5,i]
+      BETA[,i]=BT1[,i]/x[7,i]
+    }
+    Sr=array(0,c(3,num_ens,abs(tmstep)+1))
+    Incidence=matrix(0,abs(tmstep)+1,num_ens)
+    Sr[,,1]=x[1:3,]
+    L=x[6,]
+    D=x[7,]
     # start integration
     tcnt=0
     for (t in seq(ts+dt,ts+tmstep,by = dt)) {
@@ -177,9 +199,12 @@ SIRS <- function(x,ts,dt,tmstep,N,AH,seed,discrete) {
       Sr[2,,tcnt+1]=Sr[2,,tcnt]+round(ik1/6+ik2/3+ik3/3+ik4/6)+travel
       Incidence[tcnt+1,]=round(ik1i/6+ik2i/3+ik3i/3+ik4i/6)+travel
     }
+
     x[1,]=Sr[1,,tcnt+1]
     x[2,]=Sr[2,,tcnt+1]
     x[3,]=colSums(Incidence)/(N/100000)
+
   }
+  
   return (x)
 }

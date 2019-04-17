@@ -5,15 +5,20 @@ library(forecast)
 dir <- paste0(getwd(), "/")
 source(paste0(dir, "SIRS.R"))
 source(paste0(dir, "checkDA.R"))
-
 source_github <- function(u) {
   library(RCurl)
   # read script lines from website and evaluate
   script <- getURL(u, ssl.verifypeer = FALSE)
   eval(parse(text = script),envir=.GlobalEnv)
 }
-
-source_github('https://raw.githubusercontent.com/reichlab/forecast-framework-demos/master/models/ContestModel.R')
+source_github("https://raw.githubusercontent.com/reichlab/forecast-framework-demos/master/models/ContestModel.R")
+# source_github <- function(u) {
+#   library(RCurl)
+#   # read script lines from website and evaluate
+#   script <- getURL(u, ssl.verifypeer = FALSE)
+#   eval(parse(text = script),envir=.GlobalEnv)
+# }
+#
 
 SIRS_EAKF_model <- R6Class(
   inherit = ContestModel,
@@ -48,7 +53,7 @@ SIRS_EAKF_model <- R6Class(
       } # include for debugging
 
       # load data
-      private$.data <- data
+      private$.data <- IncidenceMatrix$new(data)
       private$.AbsHumidity <- AbsHumidity
       private$.phi <- phi
 
@@ -59,11 +64,11 @@ SIRS_EAKF_model <- R6Class(
       # load ILI+, prepare observations
       ILIp <- private$.data[, private$.city]
       ILIp <- ILIp * private$.scale
-      obstime <- private$.data[, "Date"]
+      obstime <- ILIplus[, "Date"]
       obstimeday <- as.numeric(as.Date(obstime, format = "%m/%d/%y"))
-      s <- paste0("10/01/", private$.year) # start training from Oct 1st
+      s <- paste0("10/01/", year) # start training from Oct 1st
       temp <- which(obstimeday > as.numeric(as.Date(s, format = "%m/%d/%y")))
-      obs <- ILIp[temp[1]:(temp[1] + private$.num_times - 1)] # observations
+      obs <- ILIp[temp[1]:(temp[1] + num_times - 1)] # observations
       startdate <- obstime[temp[1]]
       s <- paste0("01/01/", private$.year) # the first day of the year
       ts <- as.numeric(as.Date(startdate, format = "%m/%d/%y")) -
@@ -155,8 +160,8 @@ SIRS_EAKF_model <- R6Class(
         obspred <- Re(obspred[, , 3]) # num_ens*num_times
         # evaluation
         # peak week
-        pwens <- rep(NaN, private$.num_ens)
-        for (i in 1:private$.num_ens) {
+        pwens <- rep(NaN, num_ens)
+        for (i in 1:num_ens) {
           temp <- which(obspred[i, ] == max(obspred[i, ]))
           pwens[i] <- temp[1]
         }
@@ -200,11 +205,11 @@ phi <- read.csv(paste0(dir, "params_statespace_RK_ext_seed_phi.csv"), header = F
 
 # Create a new SIRS_EAKF model
 SIRS_EAKF_model <- SIRS_EAKF_model$new()
+#######ERROR###########
 
 ### fit
 SIRS_EAKF_model$fit(data, AbsHumidity, phi)
 
 ### forecast
 steps <- 15 # forecast ahead `step` number of weeks
-forecast_X <- SIRS_EAKF_model$forecast(steps = steps)
-forecast_X
+forecast_X <- SIRS_EAKF_model$forecast(fitData, steps = steps)
