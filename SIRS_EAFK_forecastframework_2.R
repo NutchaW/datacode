@@ -1,5 +1,6 @@
 library(ForecastFramework)
 library(R6)
+library(lubridate)
 library(forecast)
 
 source_github <- function(u) {
