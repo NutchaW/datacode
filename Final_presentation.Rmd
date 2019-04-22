@@ -6,6 +6,7 @@ output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
+library(knitr)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
@@ -155,6 +156,17 @@ We used the authors' initial parameters in the SIRS. Average daily absolute humi
 
 ## Results 
 
+```{r,fig.align='center',out.width='.49\\linewidth'}
+knitr::include_graphics("./p2.png")
+knitr::include_graphics("./p1.png")
+```
+
+## Results (continued)
+
+```{r,fig.align='center',out.width='.49\\linewidth'}
+knitr::include_graphics("./p3.png")
+knitr::include_graphics("./p4.png")
+```
 
 ## Discussion 
 

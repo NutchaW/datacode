@@ -24,7 +24,7 @@ library(tidyverse)
 check<-data %>%
   select(-"V1001")%>%
   gather(ensemble,value,V1:V1000,factor_key=TRUE) %>%
-  filter(!(value>50))
+  filter(!(value>30))
 check2<-data %>%
   select("X","V1001")%>%
   gather(ensemble,value,V1001,factor_key=TRUE)
