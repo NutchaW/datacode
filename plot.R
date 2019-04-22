@@ -22,13 +22,14 @@ states<-names(humid)[2:17]
 plotDat <-function(data,state,statenum){
 library(tidyverse)
 check<-data %>%
-  select(-"V101")%>%
-  gather(ensemble,value,V1:V100,factor_key=TRUE)
+  select(-"V1001")%>%
+  gather(ensemble,value,V1:V1000,factor_key=TRUE) %>%
+  filter(!(value>50))
 check2<-data %>%
-  select("X","V101")%>%
-  gather(ensemble,value,V101,factor_key=TRUE)
+  select("X","V1001")%>%
+  gather(ensemble,value,V1001,factor_key=TRUE)
 ggplot()+
-  geom_line(data=check,aes(x=X,y=value,color=ensemble),alpha=0.5,show.legend=FALSE)+
+  geom_line(data=check,aes(x=X,y=value,color=ensemble),alpha=0.3,size=0.08,show.legend=FALSE)+
   geom_line(data=check2,aes(x=X,y=value),color="black",show.legend=FALSE)+
   geom_point(data=check2,aes(x=X,y=value),color="black",size=1,show.legend=FALSE)+
   labs(x="Step Ahead",y="Peak wILI", title=state[statenum])+
